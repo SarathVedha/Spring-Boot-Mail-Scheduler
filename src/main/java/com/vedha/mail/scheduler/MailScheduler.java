@@ -1,4 +1,4 @@
-package com.vedha.mail.schedular;
+package com.vedha.mail.scheduler;
 
 import com.vedha.mail.service.MailSenderService;
 import lombok.RequiredArgsConstructor;

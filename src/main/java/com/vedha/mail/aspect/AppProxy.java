@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class AppProxy {
 
     @Around("execution(* com.vedha.mail.controller.*.*(..)) || execution(* com.vedha.mail.service.*.*(..)) " +
-            "|| execution(* com.vedha.mail.schedular.*.*(..))")
+            "|| execution(* com.vedha.mail.scheduler.*.*(..))")
     public Object logMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
 
         log.info("Method: {} called with arguments: {}", joinPoint.getSignature().toShortString(), joinPoint.getArgs());
