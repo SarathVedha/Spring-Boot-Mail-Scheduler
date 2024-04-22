@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: SpringBootMail
+  profiles:
+    active: dev
