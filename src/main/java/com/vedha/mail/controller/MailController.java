@@ -5,12 +5,16 @@ import com.vedha.mail.dto.MailDTO;
 import com.vedha.mail.dto.ScheduledMailDTO;
 import com.vedha.mail.entity.ScheduledMailEntity;
 import com.vedha.mail.service.MailSenderService;
+import com.vedha.mail.util.ScheduledMailSortField;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +83,20 @@ public class MailController {
         ScheduledMailEntity scheduledMailEntity = mailSenderService.sendScheduledMail(scheduledMailDTO);
 
         return ResponseEntity.ok(scheduledMailEntity);
+    }
+
+    @Operation(summary = "Get all scheduled mails", description = "Get all scheduled mails by page")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
+    @GetMapping(value = "/all/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<ScheduledMailEntity>> getAllScheduledMailsByPage(
+            @Parameter(description = "Page number", example = "0") @RequestParam(value = "page", defaultValue = "0") int page,
+            @Parameter(description = "Size of page", example = "10") @RequestParam(value = "size", defaultValue = "10") int size,
+            @Parameter(description = "Sort direction", example = "ASC") @RequestParam(value = "direction", defaultValue = "ASC") Sort.Direction direction,
+            @Parameter(description = "Sort field", example = "SCHEDULED_DATE") @RequestParam(value = "sort", defaultValue = "SCHEDULED_DATE") ScheduledMailSortField scheduledMailSortField) {
+
+        PageRequest pageRequest = PageRequest.of(page, size, direction, scheduledMailSortField.getField());
+
+        return ResponseEntity.ok(mailSenderService.getAllScheduledMails(pageRequest));
     }
 
 }

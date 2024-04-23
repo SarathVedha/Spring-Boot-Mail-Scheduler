@@ -15,6 +15,9 @@ import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -203,5 +206,11 @@ public class MailSenderServiceImpl implements MailSenderService {
         });
 
         return scheduled.size();
+    }
+
+    @Override
+    public Page<ScheduledMailEntity> getAllScheduledMails(Pageable pageable) {
+
+        return scheduledMailRepo.findAll(pageable);
     }
 }
