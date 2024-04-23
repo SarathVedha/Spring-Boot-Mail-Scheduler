@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -103,7 +102,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
             log.error("Error while sending attachment mail to: {}", mailAttachDTO.getTo(), e);
             throw new MailException("Error while sending attachment mail to: " + mailAttachDTO.getTo() + " : " + e);
@@ -151,7 +150,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
             return save;
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
             log.error("Error while sending scheduled mail to: {}", scheduledMailDTO.getTo(), e);
             throw new MailException("Error while sending scheduled mail to: " + scheduledMailDTO.getTo() + " : " + e);
@@ -197,7 +196,7 @@ public class MailSenderServiceImpl implements MailSenderService {
                 scheduledMailEntity.setMailStatus("SENT");
                 scheduledMailRepo.save(scheduledMailEntity);
 
-            }catch (Exception e) {
+            } catch (Exception e) {
 
                 log.error("Error while sending scheduled mail to: {}", scheduledMailEntity.getMailTo(), e);
                 scheduledMailEntity.setMailStatus("FAILED");
