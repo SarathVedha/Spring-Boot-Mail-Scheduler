@@ -14,6 +14,8 @@ EXPOSE 80
 ENV APP_PROFILE=dev
 ENV APP_PORT=80
 ENV LOG_PATH=/app/log
+ENV MAIL_USERNAME=username
+ENV MAIL_PASSWORD=password
 ENV ENV_ARGS="Env Args"
 HEALTHCHECK --interval=50s --timeout=3s CMD curl -fkv http://localhost/actuator/health || exit 1
 
