@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${APP_PORT:8080}
 
 spring:
   h2:
@@ -50,6 +50,12 @@ management:
       enabled: true
     build:
       enabled: true
+
+logging:
+  pattern:
+    level: '%5p [${spring.application.name}, ${spring.profiles.active}]'
+  file:
+    name: ${LOG_PATH:.}/mail-app.log
 
 info:
   app:

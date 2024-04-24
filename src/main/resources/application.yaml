@@ -2,4 +2,4 @@ spring:
   application:
     name: SpringBootMail
   profiles:
-    active: dev
+    active: ${APP_PROFILE:dev}

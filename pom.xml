@@ -12,7 +12,8 @@
     <artifactId>SpringBootMail</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <!--Required Tomcat 10 Spring Web Tomcat in 10 so deploy it in 10V-->
-    <packaging>war</packaging>
+<!--    <packaging>war</packaging>-->
+    <packaging>jar</packaging>
     <name>SpringBootMail</name>
     <description>Demo project for Spring Boot</description>
     <properties>
