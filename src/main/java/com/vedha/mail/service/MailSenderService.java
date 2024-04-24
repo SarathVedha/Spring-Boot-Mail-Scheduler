@@ -19,4 +19,6 @@ public interface MailSenderService {
 
     Page<ScheduledMailEntity> getAllScheduledMails(Pageable pageable);
 
+    String getEnvironmentProperty(String key);
+
 }

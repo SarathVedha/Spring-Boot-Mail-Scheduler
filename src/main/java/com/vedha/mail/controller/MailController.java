@@ -97,4 +97,11 @@ public class MailController {
         return ResponseEntity.ok(mailSenderService.getAllScheduledMails(pageRequest));
     }
 
+    @Operation(summary = "Get Environment Property", description = "Get Environment Property")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
+    @GetMapping(value = "/getProperties", consumes = MediaType.ALL_VALUE, produces = MediaType.ALL_VALUE)
+    public ResponseEntity<String> getProperties(@Parameter(description = "Get Environment Property", example = "server.port") @RequestParam("property") @NotBlank(message = "property cannot br empty") String property) {
+
+        return ResponseEntity.ok(mailSenderService.getEnvironmentProperty(property));
+    }
 }

@@ -15,6 +15,7 @@ import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -30,6 +31,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MailSenderServiceImpl implements MailSenderService {
+
+    private final Environment environment;
 
     // Spring will inject the JavaMailSender bean, configs from application.properties
     private final JavaMailSender javaMailSender;
@@ -211,5 +214,18 @@ public class MailSenderServiceImpl implements MailSenderService {
     public Page<ScheduledMailEntity> getAllScheduledMails(Pageable pageable) {
 
         return scheduledMailRepo.findAll(pageable);
+    }
+
+    @Override
+    public String getEnvironmentProperty(String key) {
+
+        // get property value from application.properties, System properties, OS environment variables, Program arguments
+        // System properties are set by the JVM and are accessible using System.getProperty("key") -- java -Dkey=value -jar app.jar
+        // Environment variables are set in the OS and are accessible using System.getenv("key") -- linux export key=value, windows set key=value
+        // what is program arguments? -- java -jar app.jar --key=value
+        // Spring will load properties and make it available using Environment object
+        // priority order: application.properties, System properties, OS environment variables, Program arguments (last one will override the previous one)
+
+        return environment.getProperty(key, "NO Value Found For Key: " + key);
     }
 }
