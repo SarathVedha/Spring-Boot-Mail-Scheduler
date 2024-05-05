@@ -29,8 +29,6 @@ spring:
           starttls:
             enable: true
 
-SPRING_BOOT: Application Properties
-
 management:
   endpoint:
     health:

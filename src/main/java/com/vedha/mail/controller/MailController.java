@@ -5,11 +5,13 @@ import com.vedha.mail.dto.MailDTO;
 import com.vedha.mail.dto.ScheduledMailDTO;
 import com.vedha.mail.entity.ScheduledMailEntity;
 import com.vedha.mail.service.MailSenderService;
+import com.vedha.mail.util.AppUtil;
 import com.vedha.mail.util.ScheduledMailSortField;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -100,7 +102,10 @@ public class MailController {
     @Operation(summary = "Get Environment Property", description = "Get Environment Property")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
     @GetMapping(value = "/getProperties", consumes = MediaType.ALL_VALUE, produces = MediaType.ALL_VALUE)
-    public ResponseEntity<String> getProperties(@Parameter(description = "Get Environment Property", example = "server.port") @RequestParam(value = "property", defaultValue = "server.port") @NotBlank(message = "property cannot br empty") String property) {
+    public ResponseEntity<String> getProperties(@Parameter(description = "Get Environment Property", example = "server.port") @RequestParam(value = "property", defaultValue = "server.port") @NotBlank(message = "property cannot br empty") String property, HttpServletRequest httpServletRequest) {
+
+        log.info("Request received from IP: {}", httpServletRequest.getRemoteAddr());
+        log.info("Request received from IP: {}", AppUtil.extractRemoteIpAddress(httpServletRequest));
 
         return ResponseEntity.ok(mailSenderService.getEnvironmentProperty(property));
     }
