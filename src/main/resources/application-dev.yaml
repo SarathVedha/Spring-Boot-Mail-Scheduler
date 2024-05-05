@@ -9,14 +9,19 @@ spring:
     url: jdbc:h2:mem:db
     username: admin
     password: admin
+    hikari:
+      pool-name: H2-HikariPool
+      maximum-pool-size: 5
+      connection-timeout: 20000
   jpa:
     show-sql: true
-    open-in-view: true
+    open-in-view: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+        use_sql_comments: true
   mail: # Gmail Configuration
     host: smtp.gmail.com
     port: 587
