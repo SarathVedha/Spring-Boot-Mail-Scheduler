@@ -20,6 +20,7 @@ public class MailScheduler {
     public void runScheduler() {
 
         int total = mailSenderService.sendScheduledMailWithAttachment();
+
         log.info("Total scheduled mails sent: {}", total);
     }
 }

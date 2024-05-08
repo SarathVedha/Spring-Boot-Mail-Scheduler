@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -173,39 +175,53 @@ public class MailSenderServiceImpl implements MailSenderService {
             scheduledMailRepo.save(scheduledMailEntity);
         });
 
+        // create thread pool with 2 threads to send mails in parallel
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
         // send mail
         scheduled.forEach(scheduledMailEntity -> {
 
-            try {
+            // ExecutorService will execute the task in a separate thread from the thread pool and reuse the thread
+            // execute method will take a Runnable task and return void, submit method will take a Callable task and return Future
+            executorService.execute(() -> {
 
-                MimeMessageHelper mimeMessageHelper = initMimeMessageHelper();
+                try {
 
-                mimeMessageHelper.setFrom(from, "Vedha");
-                mimeMessageHelper.setTo(scheduledMailEntity.getMailTo());
-                mimeMessageHelper.setSubject(scheduledMailEntity.getMailSubject());
-                mimeMessageHelper.setText(scheduledMailEntity.getMailContent(), true);
+                    log.warn("Starting Thread: {} MailId: {}", Thread.currentThread().getName(), scheduledMailEntity.getMailId());
 
-                if (scheduledMailEntity.getIsAttachment()) {
+                    MimeMessageHelper mimeMessageHelper = initMimeMessageHelper();
 
-                    ScheduledMailAttachEntity attachment = scheduledMailAttachRepo.findByMailId(scheduledMailEntity.getMailId());
+                    mimeMessageHelper.setFrom(from, "Vedha");
+                    mimeMessageHelper.setTo(scheduledMailEntity.getMailTo());
+                    mimeMessageHelper.setSubject(scheduledMailEntity.getMailSubject());
+                    mimeMessageHelper.setText(scheduledMailEntity.getMailContent(), true);
 
-                    ByteArrayDataSource byteArrayDataSource = new ByteArrayDataSource(attachment.getFileData(), attachment.getFileType());
-                    mimeMessageHelper.addAttachment(attachment.getFileName(), byteArrayDataSource);
+                    if (scheduledMailEntity.getIsAttachment()) {
+
+                        ScheduledMailAttachEntity attachment = scheduledMailAttachRepo.findByMailId(scheduledMailEntity.getMailId());
+
+                        ByteArrayDataSource byteArrayDataSource = new ByteArrayDataSource(attachment.getFileData(), attachment.getFileType());
+                        mimeMessageHelper.addAttachment(attachment.getFileName(), byteArrayDataSource);
+                    }
+
+                    javaMailSender.send(mimeMessageHelper.getMimeMessage());
+
+                    // update status to SENT
+                    scheduledMailEntity.setMailStatus("SENT");
+                    scheduledMailRepo.save(scheduledMailEntity);
+
+                    log.warn("Ending Thread: {} MailId: {}", Thread.currentThread().getName(), scheduledMailEntity.getMailId());
+
+                } catch (Exception e) {
+
+                    log.error("Thread: {} Error while sending scheduled mail to: {}", Thread.currentThread().getName(), scheduledMailEntity.getMailTo(), e);
+                    scheduledMailEntity.setMailStatus("FAILED");
+                    scheduledMailRepo.save(scheduledMailEntity);
                 }
-
-                javaMailSender.send(mimeMessageHelper.getMimeMessage());
-
-                // update status to SENT
-                scheduledMailEntity.setMailStatus("SENT");
-                scheduledMailRepo.save(scheduledMailEntity);
-
-            } catch (Exception e) {
-
-                log.error("Error while sending scheduled mail to: {}", scheduledMailEntity.getMailTo(), e);
-                scheduledMailEntity.setMailStatus("FAILED");
-                scheduledMailRepo.save(scheduledMailEntity);
-            }
+            });
         });
+
+        // shutdown the executor service after all tasks are completed to release the resources and threads in the pool and main thread will continue
+        executorService.shutdown();
 
         return scheduled.size();
     }
