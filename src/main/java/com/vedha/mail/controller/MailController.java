@@ -68,7 +68,7 @@ public class MailController {
         return ResponseEntity.ok(Map.of("message", "Mail sent successfully"));
     }
 
-    @Operation(summary = "Send mail with scheduled date", description = "Send mail to the recipient with attachment and scheduled date")
+    @Operation(summary = "Send mail with scheduled date", description = "Send mail to the recipient with attachment and scheduled date", tags = {"Scheduled Mail"})
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
     @PostMapping(value = "send/scheduled", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ScheduledMailEntity> sendScheduledMail(
@@ -85,7 +85,7 @@ public class MailController {
         return ResponseEntity.ok(scheduledMailEntity);
     }
 
-    @Operation(summary = "Get all scheduled mails", description = "Get all scheduled mails by page")
+    @Operation(summary = "Get all scheduled mails", description = "Get all scheduled mails by page", tags = {"Scheduled Mail"})
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
     @GetMapping(value = "/all/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ScheduledMailEntity>> getAllScheduledMailsByPage(
@@ -99,7 +99,7 @@ public class MailController {
         return ResponseEntity.ok(mailSenderService.getAllScheduledMails(pageRequest));
     }
 
-    @Operation(summary = "Get Environment Property", description = "Get Environment Property")
+    @Operation(summary = "Get Environment Property", description = "Get Environment Property", deprecated = true)
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
     @GetMapping(value = "/getProperties", consumes = MediaType.ALL_VALUE, produces = MediaType.ALL_VALUE)
     public ResponseEntity<String> getProperties(@Parameter(description = "Get Environment Property", example = "server.port") @RequestParam(value = "property", defaultValue = "server.port") @NotBlank(message = "property cannot br empty") String property, HttpServletRequest httpServletRequest) {

@@ -17,10 +17,10 @@ public class MailScheduler {
     // corn expression for every 5 seconds is "0/5 * * * * *"
     // cron expression for every 10 seconds is "0/10 * * * * *"
     @Scheduled(cron = "0/30 * * * * *") // every 30 seconds
-    public void runScheduler() {
+    public void runScheduler() throws InterruptedException {
 
         int total = mailSenderService.sendScheduledMailWithAttachment();
 
-        log.info("Total scheduled mails sent: {}", total);
+        log.warn("Total scheduled mails sent: {}", total);
     }
 }

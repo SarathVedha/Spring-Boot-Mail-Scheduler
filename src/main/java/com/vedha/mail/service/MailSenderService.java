@@ -15,7 +15,7 @@ public interface MailSenderService {
 
     ScheduledMailEntity sendScheduledMail(ScheduledMailDTO scheduledMailDTO);
 
-    int sendScheduledMailWithAttachment();
+    int sendScheduledMailWithAttachment() throws InterruptedException;
 
     Page<ScheduledMailEntity> getAllScheduledMails(Pageable pageable);
 

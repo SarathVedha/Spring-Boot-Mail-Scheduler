@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -163,10 +164,10 @@ public class MailSenderServiceImpl implements MailSenderService {
     }
 
     @Override
-    public int sendScheduledMailWithAttachment() {
+    public int sendScheduledMailWithAttachment() throws InterruptedException {
 
         // get all scheduled mails
-        // check if scheduled time is before current time
+        // to check if scheduled time is before current time
         List<ScheduledMailEntity> scheduled = scheduledMailRepo.findByScheduledTimeBeforeAndMailStatus(LocalDateTime.now(), "SCHEDULED");
 
         scheduled.forEach(scheduledMailEntity -> {
@@ -222,6 +223,13 @@ public class MailSenderServiceImpl implements MailSenderService {
 
         // shutdown the executor service after all tasks are completed to release the resources and threads in the pool and main thread will continue
         executorService.shutdown();
+
+        while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) { // wait for 5 seconds to complete the tasks
+
+            log.warn("Waiting for scheduled mails to complete");
+        }
+
+        log.warn("All tasks completed: {}", executorService.isTerminated());
 
         return scheduled.size();
     }
