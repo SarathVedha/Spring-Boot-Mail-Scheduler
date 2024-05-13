@@ -176,8 +176,11 @@ public class MailSenderServiceImpl implements MailSenderService {
             scheduledMailRepo.save(scheduledMailEntity);
         });
 
+        int availableProcessors = Runtime.getRuntime().availableProcessors();// get number of available processors
+        log.warn("Available Processors: {}", availableProcessors);
+
         // create thread pool with 2 threads to send mails in parallel
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
         // send mail
         scheduled.forEach(scheduledMailEntity -> {
 
@@ -224,7 +227,7 @@ public class MailSenderServiceImpl implements MailSenderService {
         // shutdown the executor service after all tasks are completed to release the resources and threads in the pool and main thread will continue
         executorService.shutdown();
 
-        while (!executorService.awaitTermination(5, TimeUnit.SECONDS)) { // wait for 5 seconds to complete the tasks
+        while (!executorService.awaitTermination(2, TimeUnit.SECONDS)) { // wait for 2 seconds to complete the tasks
 
             log.warn("Waiting for scheduled mails to complete");
         }
