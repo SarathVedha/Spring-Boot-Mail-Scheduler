@@ -1,5 +1,9 @@
 spring:
   application:
     name: SpringBootMail
+  main:
+    banner-mode: log
+  banner:
+    location: vedha_banner.txt
   profiles:
     active: ${APP_PROFILE:dev}
