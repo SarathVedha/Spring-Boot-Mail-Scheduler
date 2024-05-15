@@ -1,5 +1,6 @@
 server:
   port: ${APP_PORT:8080}
+  server-header: Vedha Technologies # Custom Server Header Name in Response e.g.: Server: aws
 
 spring:
   h2:
@@ -14,7 +15,7 @@ spring:
       maximum-pool-size: 5
       connection-timeout: 20000
   jpa:
-    show-sql: true
+#    show-sql: true # To Show SQL Queries in Console only
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -55,6 +56,14 @@ management:
       enabled: true
 
 logging:
+  level:
+#    root: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG # To log SQL Queries in Console and File
+        orm:
+          jdbc:
+            bind: TRACE # To log SQL Parameters in Console and File
   pattern:
     level: '%5p [${spring.application.name}, ${spring.profiles.active}]'
   file:
