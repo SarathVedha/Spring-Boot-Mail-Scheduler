@@ -13,4 +13,4 @@ systemctl start docker
 systemctl enable docker
 
 # Run the Docker container
-docker run -d -p 80:80 -e MAIL_USERNAME=username -e MAIL_PASSWORD=password --name mail-app sarathvedha/spring-boot-mail-app:latest
+docker run -d -p 80:80 -e MAIL_USERNAME=username -e MAIL_PASSWORD=password -v mail-log:/app/log --name mail-app sarathvedha/spring-boot-mail-app:latest
