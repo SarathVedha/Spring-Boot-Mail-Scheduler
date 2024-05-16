@@ -179,8 +179,11 @@ public class MailSenderServiceImpl implements MailSenderService {
         int availableProcessors = Runtime.getRuntime().availableProcessors();// get number of available processors
         log.warn("Available Processors: {}", availableProcessors);
 
+        int fixedThreads = availableProcessors >> 1;// divide by 2
+        log.warn("fixedThreads: {}", fixedThreads);
+
         // create thread pool with 2 threads to send mails in parallel
-        ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
+        ExecutorService executorService = Executors.newFixedThreadPool(fixedThreads);
         // send mail
         scheduled.forEach(scheduledMailEntity -> {
 
