@@ -33,18 +33,19 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
-@RestController
-@RequestMapping("/api/v1/mail")
-@RequiredArgsConstructor
-@Tag(name = "Mail", description = "Mail operations")
 @Validated
+@RestController
+@CrossOrigin("*")
+@RequiredArgsConstructor
+@RequestMapping("/api/mail")
+@Tag(name = "Mail", description = "Mail operations")
 public class MailController {
 
     private final MailSenderService mailSenderService;
 
     @Operation(summary = "Send mail", description = "Send mail to the recipient")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @PostMapping(value = "/send", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/send", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> sendMail(@RequestBody @Valid MailDTO mailDTO) {
 
         mailSenderService.sendMail(mailDTO);
@@ -54,7 +55,7 @@ public class MailController {
 
     @Operation(summary = "Send mail with attachment", description = "Send mail to the recipient with attachment")
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @PostMapping(value = "/send/attachment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/send/attachment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> sendMailWithAttachment(
             @RequestParam("to") @Parameter(name = "to", description = "Recipient email address", example = "vedha@gmail.com") @Email(message = "Invalid email address") String to,
             @RequestParam("subject") @Parameter(name = "subject", description = "Subject of mail", example = "Test mail") @NotBlank(message = "Subject cannot be empty") @Size(min = 3, max = 100, message = "Subject must be between 3 and 100 characters") String subject,
@@ -70,7 +71,7 @@ public class MailController {
 
     @Operation(summary = "Send mail with scheduled date", description = "Send mail to the recipient with attachment and scheduled date", tags = {"Scheduled Mail"})
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @PostMapping(value = "send/scheduled", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/send/scheduled", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ScheduledMailEntity> sendScheduledMail(
             @RequestParam("to") @Parameter(name = "to", description = "Recipient email address", example = "vedha@gmail.com") @Email(message = "Invalid email address") String to,
             @RequestParam("subject") @Parameter(name = "subject", description = "Subject of mail", example = "Test mail") @NotBlank(message = "Subject cannot be empty") @Size(min = 3, max = 100, message = "Subject must be between 3 and 100 characters") String subject,
@@ -87,7 +88,7 @@ public class MailController {
 
     @Operation(summary = "Get all scheduled mails", description = "Get all scheduled mails by page", tags = {"Scheduled Mail"})
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @GetMapping(value = "/all/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/v1/all/scheduled", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<ScheduledMailEntity>> getAllScheduledMailsByPage(
             @Parameter(description = "Page number", example = "0") @RequestParam(value = "page", defaultValue = "0") int page,
             @Parameter(description = "Size of page", example = "10") @RequestParam(value = "size", defaultValue = "10") int size,
@@ -101,7 +102,7 @@ public class MailController {
 
     @Operation(summary = "Get Environment Property", description = "Get Environment Property", deprecated = true)
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
-    @GetMapping(value = "/getProperties", consumes = MediaType.ALL_VALUE, produces = MediaType.ALL_VALUE)
+    @GetMapping(value = "/v1/getProperties", consumes = MediaType.ALL_VALUE, produces = MediaType.ALL_VALUE)
     public ResponseEntity<String> getProperties(@Parameter(description = "Get Environment Property", example = "server.port") @RequestParam(value = "property", defaultValue = "server.port") @NotBlank(message = "property cannot br empty") String property, HttpServletRequest httpServletRequest) {
 
         log.info("Request received from IP: {}", httpServletRequest.getRemoteAddr());
