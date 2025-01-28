@@ -128,9 +128,13 @@ public class MailSenderServiceImpl implements MailSenderService {
             mimeMessageHelper.setFrom(from, "Vedha");
             mimeMessageHelper.setTo(mailDTO.getTo());
             mimeMessageHelper.setSubject(mailDTO.getSubject());
+
+            // read HTML content from a file and replace the placeholder with actual value and set it as mail body content and set it as true to indicate HTML content
             mimeMessageHelper.setText(resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX.concat("/file/index.html")).getContentAsString(StandardCharsets.UTF_8)
                             .replace("[$First_Name]", mailDTO.getBody()),
                     true);
+
+            // add inline image in html content using cid (Content ID) -- <img src="cid:logo.png">
             mimeMessageHelper.addInline("logo.png", resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX.concat("/file/logo.png")));
 
             javaMailSender.send(mimeMessageHelper.getMimeMessage());
