@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,6 +24,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +42,7 @@ public class MailSenderServiceImpl implements MailSenderService {
     // Spring will inject the JavaMailSender bean, configs from application.properties
     private final JavaMailSender javaMailSender;
 
-//    private final ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
 
     private final ScheduledMailRepo scheduledMailRepo;
 
@@ -53,7 +55,7 @@ public class MailSenderServiceImpl implements MailSenderService {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
-        return new MimeMessageHelper(mimeMessage, true); // true indicates multipart message
+        return new MimeMessageHelper(mimeMessage, true); // true indicates a multipart message
     }
 
     @Override
@@ -71,7 +73,7 @@ public class MailSenderServiceImpl implements MailSenderService {
             mimeMessageHelper.setText(mailDTO.getBody(), true);
 
 //            mimeMessageHelper.addAttachment("Test.txt", new ClassPathResource("/file/Test.txt"), "text/plain");
-//            Resource resource = resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX + "/file/Test.txt");
+//            Resource resource = resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX.concat("/file/Test.txt"));
 //            mimeMessageHelper.addAttachment("Test.txt", resource, "text/plain");
 
 //            javaMailSender.send(mimeMessage);
@@ -114,6 +116,30 @@ public class MailSenderServiceImpl implements MailSenderService {
             throw new MailException("Error while sending attachment mail to: " + mailAttachDTO.getTo() + " : " + e);
         }
 
+    }
+
+    @Override
+    public void sendMailWithHtmlContent(MailDTO mailDTO) {
+
+        try {
+
+            MimeMessageHelper mimeMessageHelper = initMimeMessageHelper();
+
+            mimeMessageHelper.setFrom(from, "Vedha");
+            mimeMessageHelper.setTo(mailDTO.getTo());
+            mimeMessageHelper.setSubject(mailDTO.getSubject());
+            mimeMessageHelper.setText(resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX.concat("/file/index.html")).getContentAsString(StandardCharsets.UTF_8)
+                            .replace("[$First_Name]", mailDTO.getBody()),
+                    true);
+            mimeMessageHelper.addInline("logo.png", resourceLoader.getResource(ResourceLoader.CLASSPATH_URL_PREFIX.concat("/file/logo.png")));
+
+            javaMailSender.send(mimeMessageHelper.getMimeMessage());
+
+        } catch (Exception e) {
+
+            log.error("Error while sending mail with html content to: {}", mailDTO.getTo(), e);
+            throw new MailException("Error while sending mail with html content to: " + mailDTO.getTo() + " : " + e);
+        }
     }
 
     @Override

@@ -69,6 +69,20 @@ public class MailController {
         return ResponseEntity.ok(Map.of("message", "Mail sent successfully"));
     }
 
+    @Operation(summary = "Send mail with html", description = "Send mail to the recipient with html content")
+    @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
+    @PostMapping(value = "/v1/send/html", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> sendMailWithHtml(
+            @RequestParam("to") @Parameter(name = "to", description = "Recipient email address", example = "vedha@gmail.com") @Email(message = "Invalid email address") String to,
+            @RequestParam("name") @Parameter(name = "name", description = "Name of mail", example = "Sarath") @NotBlank(message = "Name cannot be empty") @Size(min = 3, max = 25, message = "Name must be between 3 and 20 characters") String name) {
+
+        MailDTO mailDTO = MailDTO.builder().to(to).subject("Welcome to Vedhagroups, ".concat(name)).body(name).build();
+
+        mailSenderService.sendMailWithHtmlContent(mailDTO);
+
+        return ResponseEntity.ok(Map.of("message", "Html Mail sent successfully"));
+    }
+
     @Operation(summary = "Send mail with scheduled date", description = "Send mail to the recipient with attachment and scheduled date", tags = {"Scheduled Mail"})
     @ApiResponse(responseCode = "200", description = "HTTP Status 200 OK")
     @PostMapping(value = "/v1/send/scheduled", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

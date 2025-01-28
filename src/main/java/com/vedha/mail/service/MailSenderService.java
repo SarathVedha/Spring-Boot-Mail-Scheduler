@@ -13,6 +13,8 @@ public interface MailSenderService {
 
     void sendMailWithAttachment(MailAttachDTO mailAttachDTO);
 
+    void sendMailWithHtmlContent(MailDTO mailDTO);
+
     ScheduledMailEntity sendScheduledMail(ScheduledMailDTO scheduledMailDTO);
 
     int sendScheduledMailWithAttachment() throws InterruptedException;
